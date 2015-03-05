@@ -5,7 +5,7 @@ import client.ReceiveService;
 import client.SendService;
 
 public class Client {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         ReceiveService receiveService = ReceiveService.getInstance();
         SendService sendService  = SendService.getInstance();
         receiveService.start();

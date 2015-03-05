@@ -13,7 +13,7 @@ public class ReceiveService implements Runnable{
 
     private ReceiveService() throws Exception{
         logService = LogService.getInstance();
-        socketService = SocketService.getReceiveInstance();
+        socketService = SocketService.getInstance();
         logService.log(threadname + "Init Singlton");
         t = null;
     }
@@ -29,9 +29,8 @@ public class ReceiveService implements Runnable{
         while(true){
             try {
                 Socket src = socketService.listen();
-                String msg = socketService.readSokect(src);
-                System.out.println("Receive a msg:"+msg);
-                socketService.response(src, msg.toUpperCase());
+                Thread thread = new Thread(new ReceiveHandle(src));
+                thread.start();
             } catch(Exception e){
                 e.printStackTrace();
             }

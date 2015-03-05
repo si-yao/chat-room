@@ -9,31 +9,24 @@ import java.io.*;
  * Created by szeyiu on 3/4/15.
  */
 public class SocketService{
-    private static SocketService receiveSocketService = null;
-    private static SocketService sendSocketService = null;
+    private static SocketService socketService = null;
     private LogService logService = null;
     private String className =  "[SocketServe]";
     private ServerSocket welcomeSocket;
 
-    private SocketService(boolean listen) throws Exception{
+    private SocketService() throws Exception{
         logService = LogService.getInstance();
         logService.log(className + " Init Singleton");
-        if(listen) welcomeSocket = new ServerSocket(6789);//listening port 6789
+        welcomeSocket = new ServerSocket(6789);//listening port 6789
     }
 
-    public static SocketService getSendInstance() throws Exception{
-        if(sendSocketService==null){
-            sendSocketService = new SocketService(false);
+    public static SocketService getInstance() throws Exception{
+        if(socketService==null){
+            socketService = new SocketService();
         }
-        return sendSocketService;
+        return socketService;
     }
 
-    public static SocketService getReceiveInstance() throws Exception{
-        if(receiveSocketService==null){
-            receiveSocketService = new SocketService(true);
-        }
-        return receiveSocketService;
-    }
 
     /**
      * send msg to addr at port, and return the response msg
