@@ -13,16 +13,15 @@ public class SocketService{
     private LogService logService = null;
     private String className =  "[SocketServe]";
     private ServerSocket welcomeSocket;
-
-    private SocketService() throws Exception{
+    private SocketService(int port) throws Exception{
         logService = LogService.getInstance();
         logService.log(className + " Init Singleton");
-        welcomeSocket = new ServerSocket(6789);//listening port 6789
+        welcomeSocket = new ServerSocket(port);//listening port 6789
     }
 
-    public static SocketService getInstance() throws Exception{
+    public static SocketService getInstance(int port) throws Exception{
         if(socketService==null){
-            socketService = new SocketService();
+            socketService = new SocketService(port);
         }
         return socketService;
     }
@@ -40,11 +39,18 @@ public class SocketService{
         Socket clientSocket = new Socket(addr, port);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        outToServer.writeBytes(msg+"\n");
+        outToServer.writeBytes(msg);
         logService.log(className + "[addr: " + addr + "][port: " + port + "][msg: " + msg + "]");
         StringBuilder sb = new StringBuilder();
-        String line = inFromServer.readLine();
-        sb.append(line);
+        char[] buf = new char[32];
+        int r = inFromServer.read(buf,0,32);
+        while(r == 32){
+            sb.append(buf);
+            r = inFromServer.read(buf,0,32);
+        }
+        for(int i=0; i<r; ++i){
+            sb.append(buf[i]);
+        }
         clientSocket.close();
         return sb.toString();
     }
@@ -62,14 +68,21 @@ public class SocketService{
     public String readSokect(Socket source) throws Exception{
         BufferedReader inFromClient = new BufferedReader(new InputStreamReader(source.getInputStream()));
         StringBuilder sb = new StringBuilder();
-        String line = inFromClient.readLine();
-        sb.append(line);
+        char[] buf = new char[32];
+        int r = inFromClient.read(buf, 0, 32);
+        while(r == 32){
+            sb.append(buf);
+            r = inFromClient.read(buf,0,32);
+        }
+        for(int i=0; i<r; ++i){
+            sb.append(buf[i]);
+        }
         return sb.toString();
     }
 
     public void response(Socket source, String msg) throws Exception{
         DataOutputStream outToClient = new DataOutputStream(source.getOutputStream());
-        outToClient.writeBytes(msg+"\n");
+        outToClient.writeBytes(msg);
     }
 
 

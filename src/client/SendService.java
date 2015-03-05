@@ -13,14 +13,16 @@ public class SendService implements Runnable {
     private LogService logService;
     private SocketService socketService;
     public static String serverAddr = "localhost";// configurable
-    public static int serverPort = 5678;// configurable
+    public static int serverPort = 6789;// configurable
+    public static int listenPort = 6789;
     public static int BLOCK_TIME = 60;// configurable
     private boolean isBlock;
+    public static String username = "";
 
 
     private SendService() throws Exception{
         logService = LogService.getInstance();
-        socketService = SocketService.getInstance();
+        socketService = SocketService.getInstance(listenPort);
         logService.log(threadname + "Init Singlton");
         t = null;
     }
@@ -53,6 +55,7 @@ public class SendService implements Runnable {
         boolean success = false;
         int wrongtime = 0;
         isBlock = false;
+        String user = "";
         while(!success) {
             if(wrongtime>=3){
                 isBlock = true;
@@ -62,7 +65,7 @@ public class SendService implements Runnable {
                 wrongtime = 0;
             }
             System.out.print("Username: ");
-            String username = scanner.nextLine();
+            user = scanner.nextLine();
             System.out.print("Password: ");
             String password = scanner.nextLine();
             if(isBlock){
@@ -71,18 +74,19 @@ public class SendService implements Runnable {
             }
             Map<String, String> param = new HashMap<String, String>();
             param.put("type", "auth");
-            param.put("username", username);
+            param.put("username", user);
             param.put("password", password);
+            param.put("port", ""+listenPort);
             try {
                 Map<String, String> res = KVSerialize.decode(socketService.request(serverAddr, serverPort, KVSerialize.encode(param)));
-                success = res.get("msg").equals("ok");
+                success = res.containsKey("result")? res.get("result").equals("ok"): false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
             wrongtime ++;
         }
         System.out.println("Welcome to simple chat server!");
-
+        username =user;
         while(true){
             String line = scanner.nextLine();
             try {

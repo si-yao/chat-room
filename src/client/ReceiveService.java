@@ -13,7 +13,7 @@ public class ReceiveService implements Runnable{
 
     private ReceiveService() throws Exception{
         logService = LogService.getInstance();
-        socketService = SocketService.getInstance();
+        socketService = SocketService.getInstance(SendService.listenPort);
         logService.log(threadname + "Init Singlton");
         t = null;
     }

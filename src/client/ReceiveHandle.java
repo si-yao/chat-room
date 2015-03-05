@@ -14,13 +14,17 @@ public class ReceiveHandle implements Runnable{
     }
     public void run(){
         try {
-            SocketService socketService = SocketService.getInstance();
+            SocketService socketService = SocketService.getInstance(SendService.listenPort);
             String msg = socketService.readSokect(src);
             Map<String, String> dic = KVSerialize.decode(msg);
 
-            if("msg".equals(dic.get("type"))) {
-                System.out.println("Receive a msg:" + msg);
-                socketService.response(src, dic.get("msg").toUpperCase());
+            if("message".equals(dic.get("type"))) {
+                String from = dic.containsKey("from")? dic.get("from"):"";
+                String info = dic.containsKey("msg")? dic.get("msg"):"";
+                System.out.println( from +": "+ info);
+                Map<String, String> resp = new HashMap<String, String>();
+                resp.put("result","ok");
+                socketService.response(src, KVSerialize.encode(resp));
             }
 
         } catch (Exception e){
