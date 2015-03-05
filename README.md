@@ -49,3 +49,8 @@ Server API:
 
     Response: {"result" : "ok", "ip": "192.168.1.1"} if success, {"result" : "fail", "ip": "null"} if failed
 
+9. Life Keeper
+
+    Request: {"type": "alive", "from": "username"}
+
+    Response: {"result": "ok"}
