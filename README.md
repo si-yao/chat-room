@@ -45,12 +45,32 @@ Server API:
 
 8. Get Address
 
-    Request: {"type": "logout", "target": "targetuser"}
+    Request: {"type": "address", "from": "myname", "target": "targetuser"}
 
-    Response: {"result" : "ok", "ip": "192.168.1.1"} if success, {"result" : "fail", "ip": "null"} if failed
+    Response: {"result" : "ok", "ip": "192.168.1.1", "port":"123"} if success, {"result" : "fail", "ip": "null", "port":"null"} if failed
 
 9. Life Keeper
 
     Request: {"type": "alive", "from": "username"}
 
     Response: {"result": "ok"}
+
+Client p2p API:
+
+1. Send Message
+
+    Request: {"type": "message", "from": "myname", "to": "targetname", "msg":"messages..."}
+
+    Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.
+
+2. Being notified offline
+
+    Request: {"type": "offline", "from": "offline user"}
+
+    Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.
+
+3. Require Auth (TODO)
+
+    Request: {"type": "request", "from": "some user"}
+
+    Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.

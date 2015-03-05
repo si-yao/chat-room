@@ -19,6 +19,8 @@ public class HubService implements Runnable{
     public static Map<String, Integer> portMap;
     public static Map<String, List<String>> blockMap;
     public static Map<String, List<String>> offlineReq;
+    public static Map<String, Boolean> aliveMap;
+    public static Map<String, Set<String>> p2pPairs;
     public static int serverPort;
     private String passwdFile = "credentials.txt";
 
@@ -29,6 +31,8 @@ public class HubService implements Runnable{
         portMap = new HashMap<String, Integer>();
         blockMap = new HashMap<String, List<String>>();
         offlineReq = new HashMap<String, List<String>>();
+        aliveMap = new HashMap<String, Boolean>();
+        p2pPairs = new HashMap<String, Set<String>>();
         File f = new File(passwdFile);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
         String line = reader.readLine();
@@ -50,6 +54,8 @@ public class HubService implements Runnable{
     }
 
     public void run(){
+        Thread lifeKiller = new Thread(new LifeKiller());
+        lifeKiller.start();
         while(true){
             try {
                 Socket src = socketService.listen();

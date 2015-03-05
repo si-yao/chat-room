@@ -26,6 +26,16 @@ public class ReceiveHandle implements Runnable{
                 resp.put("result","ok");
                 socketService.response(src, KVSerialize.encode(resp));
             }
+            else if("offline".equals(dic.get("type"))){
+                String from = dic.containsKey("from")? dic.get("from"):"";
+                System.out.println("System: p2p user: "+from+ " is offline now.");
+                if(SendService.p2pPortMap.containsKey(from)){
+                    SendService.p2pPortMap.remove(from);
+                }
+                if(SendService.p2pIpMap.containsKey(from)){
+                    SendService.p2pPortMap.remove(from);
+                }
+            }
 
         } catch (Exception e){
             e.printStackTrace();

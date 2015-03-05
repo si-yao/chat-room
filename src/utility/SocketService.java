@@ -39,18 +39,10 @@ public class SocketService{
         Socket clientSocket = new Socket(addr, port);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        outToServer.writeBytes(msg);
+        outToServer.writeBytes(msg+"\n");
         logService.log(className + "[addr: " + addr + "][port: " + port + "][msg: " + msg + "]");
         StringBuilder sb = new StringBuilder();
-        char[] buf = new char[32];
-        int r = inFromServer.read(buf,0,32);
-        while(r == 32){
-            sb.append(buf);
-            r = inFromServer.read(buf,0,32);
-        }
-        for(int i=0; i<r; ++i){
-            sb.append(buf[i]);
-        }
+        sb.append(inFromServer.readLine());
         clientSocket.close();
         return sb.toString();
     }
@@ -68,21 +60,13 @@ public class SocketService{
     public String readSokect(Socket source) throws Exception{
         BufferedReader inFromClient = new BufferedReader(new InputStreamReader(source.getInputStream()));
         StringBuilder sb = new StringBuilder();
-        char[] buf = new char[32];
-        int r = inFromClient.read(buf, 0, 32);
-        while(r == 32){
-            sb.append(buf);
-            r = inFromClient.read(buf,0,32);
-        }
-        for(int i=0; i<r; ++i){
-            sb.append(buf[i]);
-        }
+        sb.append(inFromClient.readLine());
         return sb.toString();
     }
 
     public void response(Socket source, String msg) throws Exception{
         DataOutputStream outToClient = new DataOutputStream(source.getOutputStream());
-        outToClient.writeBytes(msg);
+        outToClient.writeBytes(msg+"\n");
     }
 
 
