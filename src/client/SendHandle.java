@@ -52,7 +52,7 @@ public class SendHandle implements Runnable{
             }
             else {
                 SendService.blockMainInput = true;
-                System.out.println("Send msg to "+SendService.lastuser+"? (Y/N) Y");
+                System.out.print("Send msg to "+SendService.lastuser+"? (Y/N) Y");
                 while(SendService.inputLine == null){
                     Thread.sleep(10);
                 }
