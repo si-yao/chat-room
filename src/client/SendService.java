@@ -21,6 +21,8 @@ public class SendService implements Runnable {
     public static Map<String, Integer> p2pPortMap;
     private boolean isBlock;
     public static String username = "";
+    public static String lastuser = "";
+    public static boolean blockMainInput = false;
 
 
     private SendService() throws Exception{
@@ -94,11 +96,13 @@ public class SendService implements Runnable {
             isLogin = true;
             System.out.println("Welcome to simple chat server!");
             username = user;
+            lastuser = user;
             Thread lifeKeeper = new Thread(new LifeKeeper());
             lifeKeeper.start();
             while (isLogin) {
                 String line = scanner.nextLine();
                 if(!isLogin) break;
+                if(blockMainInput) continue;
                 try {
                     Thread thread = new Thread(new SendHandle(line));
                     thread.start();

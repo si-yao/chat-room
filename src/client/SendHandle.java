@@ -6,6 +6,7 @@ import utility.SocketService;
 import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created by szeyiu on 3/4/15.
@@ -19,6 +20,7 @@ public class SendHandle implements Runnable{
     public void run(){
         try {
             socketService = SocketService.getInstance(SendService.listenPort);
+            if(cmd.length()==0) return;
             int spaceIdx = cmd.indexOf(" ");
             if(spaceIdx<0){
                 spaceIdx = cmd.length();
@@ -49,7 +51,16 @@ public class SendHandle implements Runnable{
                 p2p();
             }
             else {
-                System.out.println("unknown cmd");
+                SendService.blockMainInput = true;
+                System.out.println("Send this message to "+SendService.lastuser+"? (Y/N)");
+                Scanner in = new Scanner(System.in);
+                if(!in.nextLine().toLowerCase().equals("y")) {
+                    System.out.println("cancel.");
+                    return;
+                }
+                SendService.blockMainInput = false;
+                cmd = "message " + SendService.lastuser + " " + cmd;
+                message();
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -78,6 +89,7 @@ public class SendHandle implements Runnable{
                 System.out.println("Server Error. Try again.");
                 return;
             } else if(!addrDic.get("result").equals("ok")){
+                SendService.lastuser = toUser;
                 //System.out.println(addrDic.get("result"));
                 dic.put("from", SendService.username);
                 dic.put("to", toUser);
@@ -87,7 +99,7 @@ public class SendHandle implements Runnable{
                 if(!dic.containsKey("result")){
                     System.out.println("Server Error. Try again.");
                 } else if(dic.get("result").equals("ok")){
-                    System.out.println("(delivered)");
+                    System.out.println("(delivered to "+toUser+" p2p)");
                 } else {
                     System.out.println(dic.get("result"));
                 }
@@ -233,13 +245,14 @@ public class SendHandle implements Runnable{
         dic.put("msg",cmd.substring(userIdx + 1));
         dic.put("from", SendService.username);
         dic.put("to", toUser);
+        SendService.lastuser = toUser;
         String res = socketService.request(SendService.serverAddr, SendService.serverPort, KVSerialize.encode(dic));
         //System.out.println(res);
         Map<String, String> resDic = KVSerialize.decode(res);
         if(resDic.containsKey("result") && !resDic.get("result").equals("ok")){
             System.out.println(resDic.get("result"));
         } else if(resDic.containsKey("result") && resDic.get("result").equals("ok")){
-            System.out.println("(delivered)");
+            System.out.println("(delivered to "+toUser+")");
         }
     }
 }
