@@ -262,7 +262,7 @@ public class HubHandle implements Runnable{
 
     private void online() throws Exception {
         Map<String, String> kvmap = new HashMap<String, String>();
-        for(String u: HubService.ipMap.keySet()){
+        for(String u: new ArrayList<String>(HubService.ipMap.keySet())){
             kvmap.put(u,u);
         }
         socketService.response(src, KVSerialize.encode(kvmap));
@@ -275,6 +275,18 @@ public class HubHandle implements Runnable{
         int port = dic.containsKey("port")? Integer.valueOf(dic.get("port")):0;
 
         if(HubService.passwdMap.containsKey(u) && p.equals(HubService.passwdMap.get(u))){
+            if(isOnline(u)){
+                String oldIP = HubService.ipMap.get(u);
+                int oldPort = HubService.portMap.get(u);
+                Map<String, String> killMap = new HashMap<String, String>();
+                killMap.put("type","kill");
+                killMap.put("reason","you have logged in at another place.");
+                try {
+                    socketService.request(oldIP, oldPort, KVSerialize.encode(killMap));
+                } catch (Exception e){
+                    System.out.println("the user seems has been offline already");
+                }
+            }
             kvmap.put("result","ok");
             socketService.response(src,KVSerialize.encode(kvmap));
             String IP = src.getInetAddress().getHostAddress();

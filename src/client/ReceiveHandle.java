@@ -35,6 +35,17 @@ public class ReceiveHandle implements Runnable{
                 if(SendService.p2pIpMap.containsKey(from)){
                     SendService.p2pPortMap.remove(from);
                 }
+                Map<String, String> resp = new HashMap<String, String>();
+                resp.put("result","ok");
+                socketService.response(src, KVSerialize.encode(resp));
+            }
+            else if("kill".equals(dic.get("type"))){
+                String reason = dic.containsKey("reason")? dic.get("reason"):"unknown reason";
+                System.out.println("System: you are kicked out. Reason: " + reason);
+                SendService.isLogin = false;
+                Map<String, String> resp = new HashMap<String, String>();
+                resp.put("result","ok");
+                socketService.response(src, KVSerialize.encode(resp));
             }
 
         } catch (Exception e){

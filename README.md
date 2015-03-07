@@ -74,3 +74,9 @@ Client p2p API:
     Request: {"type": "request", "from": "some user"}
 
     Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.
+
+4. Kill the user
+
+    Request: {"type": "kill", "reason": "you have logged in at another place."}
+
+    Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.

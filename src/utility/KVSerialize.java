@@ -8,7 +8,7 @@ public class KVSerialize {
     private static char delimiter = ':';
     public static String encode(Map<String, String> kvMap){
         StringBuilder sb = new StringBuilder();
-        for(String key: kvMap.keySet()){
+        for(String key: new ArrayList<String>(kvMap.keySet())){
             encode(sb, key);
             sb.append(delimiter);
             encode(sb, kvMap.get(key));
@@ -59,7 +59,7 @@ public class KVSerialize {
 
     public static void printMap(Map<String, String> map){
         System.out.println("------------");
-        for(String k: map.keySet()){
+        for(String k: new ArrayList<String>(map.keySet())){
             System.out.println(k);
             System.out.println(map.get(k));
             System.out.println("------------");
