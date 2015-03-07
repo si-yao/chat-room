@@ -52,7 +52,7 @@ public class SendHandle implements Runnable{
             }
             else {
                 SendService.blockMainInput = true;
-                System.out.print("Send msg to "+SendService.lastuser+"? (Y/N) Y");
+                System.out.print("Send msg to " + SendService.lastuser + "? (Y/N) Y");
                 while(SendService.inputLine == null){
                     Thread.sleep(10);
                 }
@@ -90,7 +90,6 @@ public class SendHandle implements Runnable{
                 System.out.println("Server Error. Try again.");
                 return;
             } else if(!addrDic.get("result").equals("ok")){
-                SendService.lastuser = toUser;
                 //System.out.println(addrDic.get("result"));
                 dic.put("from", SendService.username);
                 dic.put("to", toUser);
@@ -106,10 +105,11 @@ public class SendHandle implements Runnable{
                 }
                 return;
             }
+            SendService.lastuser = toUser;
             SendService.p2pIpMap.put(toUser, addrDic.get("ip"));
             SendService.p2pPortMap.put(toUser, Integer.valueOf(addrDic.get("port")));
         }
-
+        SendService.lastuser = toUser;
         dic.put("from", SendService.username);
         dic.put("to", toUser);
         dic.put("msg", message);
