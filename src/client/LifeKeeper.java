@@ -2,6 +2,7 @@ package client;
 import utility.KVSerialize;
 import utility.SocketService;
 
+import java.net.ConnectException;
 import java.util.*;
 /**
  * Created by szeyiu on 3/5/15.
@@ -19,10 +20,24 @@ public class LifeKeeper implements Runnable{
         dic.put("from", SendService.username);
         String req = KVSerialize.encode(dic);
         while(SendService.isLogin){
-            try {
-                if(socketService!=null) {
-                    socketService.request(SendService.serverAddr, SendService.serverPort, req);
+            int tryCount = 0;
+            while(true) {
+                try {
+                    if (socketService != null) {
+                        socketService.request(SendService.serverAddr, SendService.serverPort, req);
+                        break;
+                    }
+                } catch (Exception e) {
+                    tryCount++;
+                    if(tryCount==3) {
+                        System.out.println("System: server down. exit...");
+                        System.exit(-1);
+                    }
+                    System.out.println("System: Reconnecting the server...");
                 }
+            }
+
+            try {
                 Thread.sleep(30 * 1000);
             } catch (Exception e){
                 e.printStackTrace();
