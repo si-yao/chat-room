@@ -23,7 +23,7 @@ public class SendService implements Runnable {
     public static String username = "";
     public static String lastuser = "";
     public static boolean blockMainInput = false;
-
+    public static String inputLine = null;
 
     private SendService() throws Exception{
         logService = LogService.getInstance();
@@ -101,8 +101,13 @@ public class SendService implements Runnable {
             lifeKeeper.start();
             while (isLogin) {
                 String line = scanner.nextLine();
+                inputLine = null;
                 if(!isLogin) break;
-                if(blockMainInput) continue;
+                if(blockMainInput){
+                    inputLine = line;
+                    blockMainInput = false;
+                    continue;
+                }
                 try {
                     Thread thread = new Thread(new SendHandle(line));
                     thread.start();

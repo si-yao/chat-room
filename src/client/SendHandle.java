@@ -52,13 +52,14 @@ public class SendHandle implements Runnable{
             }
             else {
                 SendService.blockMainInput = true;
-                System.out.println("Send this message to "+SendService.lastuser+"? (Y/N)");
-                Scanner in = new Scanner(System.in);
-                if(!in.nextLine().toLowerCase().equals("y")) {
+                System.out.println("Send msg to "+SendService.lastuser+"? (Y/N) Y");
+                while(SendService.inputLine == null){
+                    Thread.sleep(10);
+                }
+                if(SendService.inputLine.toLowerCase().equals("n")) {
                     System.out.println("cancel.");
                     return;
                 }
-                SendService.blockMainInput = false;
                 cmd = "message " + SendService.lastuser + " " + cmd;
                 message();
             }
