@@ -5,6 +5,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 /**
+ * This is hte main thread for incoming requests.
  * Created by szeyiu on 3/4/15.
  */
 public class HubService implements Runnable{

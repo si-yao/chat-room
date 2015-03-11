@@ -6,6 +6,7 @@ import java.net.*;
 import java.util.*;
 
 /**
+ * This is the thread to handle the incoming request.
  * Created by szeyiu on 3/4/15.
  */
 public class HubHandle implements Runnable{

@@ -69,19 +69,15 @@ Client p2p API:
 
     Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.
 
-3. Require Auth (TODO)
 
-    Request: {"type": "request", "from": "some user"}
 
-    Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.
-
-4. Kill the user
+3. Kill the user
 
     Request: {"type": "kill", "reason": "you have logged in at another place."}
 
     Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.
 
-5. Need IP
+4. Need IP
 
     Request: {"type": "ip", "from":"user"}
 

@@ -5,7 +5,7 @@ import java.util.*;
 
 /**
  * This is the class listening all keyboard input.
- * And same all information about current user.
+ * And save all information about current user.
  * Created by szeyiu on 3/4/15.
  */
 public class SendService implements Runnable {
