@@ -230,7 +230,124 @@ Before sending, the client will confirm with the user whether send or not.
 ------------------------------------------------------
 5. Additional features
 ------------------------------------------------------
+
 -----------------------
 5.1 P2P privacy and consent
 -----------------------
-Same with
+Meet all requirements described in assignment.
+
+***Test case 1***
+Get address of target user
+
+Type in user1:
+getaddress user2
+
+Then user2 will get a message:
+System: the user: user1 is requesting your address. Consent(Y/N)? Y
+
+If user2 enter return, or type Y or y and enter, then user1 will get the address.
+If user2 type N or n and enter, then the user1 will get a message that user2 rejected it.
+
+***Test case 2***
+Establish P2P connection
+If user1 has not has a p2p connection with user2.
+
+Then type in user1:
+private user2 hello from user1
+
+Then user2 will get a message:
+System: the user: user1 is requesting your address. Consent(Y/N)? Y
+
+If user2 enter return, or type Y or y and enter, then user1 will get the address, and user2 will get the message.
+If user2 type N or n and enter, then the user1 will get a message that user2 rejected it, but user2 still can receive the message via server (not p2p).
+
+***Test case 3***
+If user2 blocks user1.
+Then type in user1:
+getaddress user2
+
+Then it will display:
+you are blocked1!
+
+-----------------------
+5.2 Guaranteed message delivery
+-----------------------
+Meet all requirements described in assignment.
+
+***Test case 1***
+When establish p2p connection from user1 to user2, and user2 reject it.
+This is the same scenario with test case 2 in 5.1(P2P privacy and consent)
+The message is guaranteed to be delivered even p2p connection is rejected (as long as user1 is not blocked by user2)
+
+***Test case 2***
+During p2p chatting, user2 loses connection unexpectedly.
+Then user1 type:
+private user2 hello, there
+
+User2 will not get the message because he is offline now, although user1 and server don't not know.
+Now user1 will try to connect user2, but it fails. Then user1 will send the message to server instead.
+And now server also cannot connect user2, then server save the message to the offline message queue.
+
+Besides that, server will notify user1 that user2 is offline and user1 will receive a message:
+System: p2p user: user2 is offline now.
+
+Next time when user2 is online, it will receive:
+user1: hello, there
+
+***Test case 3***
+When user2 loses connection unexpectedly.
+Then user1 type:
+message user2 hello, there
+
+Now server does not know that user2 is offline now. It will to connect user2, but it fails.
+Then server save the message to the offline message queue.
+Next time when user2 is online, it will receive:
+user1: hello, there
+
+***Test case 4***
+During p2p chatting between user1 and user2, server finds that user2 logs out or loses the connection.
+Then user1 will receive a message from server:
+System: p2p user: user2 is offline now.
+
+Then next time user1 wants to start a p2p chat with user2, the message will be added in offline message queue and send to user2 next time logged in.
+
+***Test case 5***
+If user2 is offline in the beginning, then when user1 tries to start a p2p chat, the message will be added in offline message queue and send to user2 next time logged in.
+For example,
+user1 type:
+private user2 hello, there
+
+then he will receive:
+user2 is offline now. Msg will be delivered when online.
+
+next time user2 logs in, he will receive:
+user1: hello, there
+
+-----------------------
+5.2 Simple chat
+-----------------------
+Type the command like "message username" and "private username" is too tedious!
+
+So I simplify the command.
+For the first time that user1 sends message to user2, then user1 should type:
+message user2 hello, there
+
+or for p2p connection:
+private user2 hello, there
+
+Then next time, the user1 only need to type the message itself without any prefix!
+For exmaple:
+Hello, there
+
+Then client will ask user1:
+Send msg to user2? (Y/N) Y
+
+And if user1 type enter or type Y or y and enter, then the message will send out.
+Otherwise if user type N or n and enter, then the message will be cancelled.
+
+-----------------------
+5.3 Well-formed API
+-----------------------
+I use key/value pairs as protocol. And I create a well-formed api between server and client.
+In this way, anyone who know the API could design their own client in any language on any platform.
+The detail of API is shown in section 1.5 API.
