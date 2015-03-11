@@ -8,12 +8,16 @@ import java.util.*;
 import java.net.*;
 
 /**
+ * This class handles heartbeats from clients.
+ * If it does not receive heartbeat from a client for a certain time,
+ * then it will kill the client.
  * Created by szeyiu on 3/5/15.
  */
 public class LifeKiller implements Runnable{
     SocketService socketService;
     LogService logService;
     String className = "[Server][LifeKiller]";
+    int KILL_TIME = 60; //kill the client if does not receive a heartbeat for 60s
     public LifeKiller(){
         try {
             socketService = SocketService.getInstance(HubService.serverPort);
@@ -26,7 +30,7 @@ public class LifeKiller implements Runnable{
     public void run(){
         while(true) {
             try {
-                Thread.sleep(60 * 1000);
+                Thread.sleep(KILL_TIME * 1000);
                 for (String u : new ArrayList<String>(HubService.aliveMap.keySet())) {
                     if (HubService.aliveMap.containsKey(u) && !HubService.aliveMap.get(u)) {
                         logService.log(className+"kill user: "+u+", cause: time out");
@@ -45,6 +49,9 @@ public class LifeKiller implements Runnable{
         }
     }
 
+    /**
+     * force the client to logout to kill it.
+     */
     private class Logout implements Runnable{
         String from;
         public Logout(String from){

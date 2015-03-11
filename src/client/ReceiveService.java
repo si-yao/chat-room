@@ -2,6 +2,7 @@ package client;
 import utility.*;
 import java.net.*;
 /**
+ * This class is the main thread for receive the socket from p2p user or server
  * Created by szeyiu on 3/4/15.
  */
 public class ReceiveService implements Runnable{
@@ -29,6 +30,9 @@ public class ReceiveService implements Runnable{
         while(true){
             try {
                 Socket src = socketService.listen();
+                /*
+                create new thread to handle every incoming socket.
+                 */
                 Thread thread = new Thread(new ReceiveHandle(src));
                 thread.start();
             } catch(Exception e){

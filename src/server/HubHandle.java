@@ -19,6 +19,9 @@ public class HubHandle implements Runnable{
         socketService = SocketService.getInstance(HubService.serverPort);
     }
 
+    /**
+     * Read the message from input socket, and do the routines for the request.
+     */
     public void run(){
         try {
             String msg = socketService.readSokect(src);
@@ -66,6 +69,11 @@ public class HubHandle implements Runnable{
         }
     }
 
+    /**
+     * Handle the heartbeat from the client. Update the alive map.
+     * @param dic
+     * @throws Exception
+     */
     private void alive(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         HubService.aliveMap.put(from, true);
@@ -74,6 +82,13 @@ public class HubHandle implements Runnable{
         socketService.response(src,KVSerialize.encode(resDic));
     }
 
+    /**
+     * get address. first look up if the target user is online.
+     * And then ask the target user if he wants to give his address.
+     * Then return the rejection to user or give the IP/PORT to user.
+     * @param dic
+     * @throws Exception
+     */
     private void address(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String target = dic.containsKey("target")? dic.get("target"):"";
@@ -130,6 +145,11 @@ public class HubHandle implements Runnable{
         socketService.response(src, KVSerialize.encode(resDic));
     }
 
+    /**
+     * If a user logged out, then remove the information of this user and notify other users.
+     * @param dic
+     * @throws Exception
+     */
     private void logout(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         if(HubService.ipMap.containsKey(from)){
@@ -156,6 +176,10 @@ public class HubHandle implements Runnable{
         socketService.response(src, KVSerialize.encode(resDic));
     }
 
+    /**
+     * When a user logged out, then the server sends notification to every user
+     * who has a p2p connection with the user.
+     */
     private class OfflineMsg implements Runnable{
         String from;
         String u;
@@ -178,6 +202,11 @@ public class HubHandle implements Runnable{
         }
     }
 
+    /**
+     * unblock a user
+     * @param dic
+     * @throws Exception
+     */
     private void unblock(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String target = dic.containsKey("target")? dic.get("target"):"";
@@ -204,6 +233,11 @@ public class HubHandle implements Runnable{
         socketService.response(src, KVSerialize.encode(resDic));
     }
 
+    /**
+     * block a user
+     * @param dic
+     * @throws Exception
+     */
     private void block(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String target = dic.containsKey("target")? dic.get("target"):"";
@@ -226,6 +260,11 @@ public class HubHandle implements Runnable{
         socketService.response(src, KVSerialize.encode(resDic));
     }
 
+    /**
+     * broadcast the message, except the users who block the sender.
+     * @param dic
+     * @throws Exception
+     */
     private void broadcast(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String message = dic.containsKey("msg")? dic.get("msg"):"";
@@ -247,6 +286,10 @@ public class HubHandle implements Runnable{
         socketService.response(src, KVSerialize.encode(resDic));
     }
 
+    /**
+     * This is the thread to sent the broadcast message.
+     * Using a runnable class could make it concurrent.
+     */
     private class GroupMsg implements Runnable{
         String req;
         String to;
@@ -266,10 +309,21 @@ public class HubHandle implements Runnable{
         }
     }
 
+    /**
+     * judge a user is online or not.
+     * @param u
+     * @return
+     */
     private boolean isOnline(String u){
         return HubService.ipMap.containsKey(u) && !HubService.ipMap.get(u).equals("");
     }
 
+    /**
+     * judge if user A blocks user B
+     * @param a
+     * @param b
+     * @return
+     */
     private boolean blockBbyA(String a, String b){
         if(HubService.blockMap.containsKey(a)){
             List<String> blst = HubService.blockMap.get(a);
@@ -281,6 +335,10 @@ public class HubHandle implements Runnable{
     }
 
 
+    /**
+     * get the list of online users.
+     * @throws Exception
+     */
     private void online() throws Exception {
         Map<String, String> kvmap = new HashMap<String, String>();
         for(String u: new ArrayList<String>(HubService.ipMap.keySet())){
@@ -289,6 +347,12 @@ public class HubHandle implements Runnable{
         socketService.response(src, KVSerialize.encode(kvmap));
     }
 
+    /**
+     * authentication for user login.
+     * If the user successfully logs in, then send offline messages to him.
+     * @param dic
+     * @throws Exception
+     */
     private void auth(Map<String, String> dic) throws Exception {
         Map<String, String> kvmap = new HashMap<String, String>();
         String u = dic.containsKey("username")? dic.get("username"): "";
@@ -327,12 +391,22 @@ public class HubHandle implements Runnable{
         }
     }
 
+    /**
+     * a simple response with error message if the request is unknown
+     * @throws Exception
+     */
     private void error() throws Exception{
         Map<String, String> map = new HashMap<String, String>();
         map.put("result", "unknown error");
         socketService.response(src, KVSerialize.encode(map));
     }
 
+    /**
+     * send the message from userA to userB
+     * Same it to offline message queue, if the target user is offline
+     * @param dic
+     * @throws Exception
+     */
     private void message(Map<String, String> dic) throws Exception{
         String from = dic.containsKey("from")? dic.get("from"): "";
         String to = dic.containsKey("to")? dic.get("to"): "";

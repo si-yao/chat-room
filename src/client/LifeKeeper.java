@@ -2,12 +2,14 @@ package client;
 import utility.KVSerialize;
 import utility.SocketService;
 
-import java.net.ConnectException;
 import java.util.*;
 /**
+ * This is the thread for heartbeats.
+ * Send heartbeats for every 30s.
  * Created by szeyiu on 3/5/15.
  */
 public class LifeKeeper implements Runnable{
+    int BEAT_TIME = 30;
     public void run(){
         SocketService socketService = null;
         try {
@@ -38,7 +40,7 @@ public class LifeKeeper implements Runnable{
             }
 
             try {
-                Thread.sleep(30 * 1000);
+                Thread.sleep(BEAT_TIME * 1000);
             } catch (Exception e){
                 e.printStackTrace();
             }

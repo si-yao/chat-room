@@ -1,6 +1,8 @@
 package utility;
 import java.util.*;
 /**
+ * This is the protocol for socket.
+ * It convert a Map to a serialized string for messaging via socket.
  * Created by szeyiu on 3/4/15.
  * This class serializes the key value pairs (Map) into string.
  */
@@ -19,7 +21,7 @@ public class KVSerialize {
     }
 
     /**
-     * encode a string
+     * encode a string from a Map.
      */
     private static void encode(StringBuilder sb, String s){
         for(int i=0; i<s.length(); ++i){
@@ -30,6 +32,11 @@ public class KVSerialize {
         }
     }
 
+    /**
+     * decode the string to Map
+     * @param s
+     * @return
+     */
     public static Map<String, String> decode(String s){
         Map<String, String> rstMap = new HashMap<String, String>();
         boolean isKey = true;
@@ -57,6 +64,10 @@ public class KVSerialize {
         return rstMap;
     }
 
+    /**
+     * print the elements in the Map for debugging.
+     * @param map
+     */
     public static void printMap(Map<String, String> map){
         System.out.println("------------");
         for(String k: new ArrayList<String>(map.keySet())){

@@ -13,7 +13,7 @@ public class HubService implements Runnable{
     private static HubService hubService = null;
     private LogService logService;
     private SocketService socketService;
-
+    //following *Map members are info of users.
     public static Map<String, String> passwdMap;
     public static Map<String, String> ipMap;
     public static Map<String, Integer> portMap;
@@ -55,10 +55,12 @@ public class HubService implements Runnable{
 
     public void run(){
         Thread lifeKiller = new Thread(new LifeKiller());
+        //start life killer
         lifeKiller.start();
         while(true){
             try {
                 Socket src = socketService.listen();
+                //for every incoming socket, start a new thread to handle
                 Thread thread = new Thread(new HubHandle(src));
                 thread.start();
             } catch(Exception e){

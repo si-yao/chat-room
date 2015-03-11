@@ -4,6 +4,8 @@ import utility.*;
 import java.util.*;
 
 /**
+ * This is the class listening all keyboard input.
+ * And same all information about current user.
  * Created by szeyiu on 3/4/15.
  */
 public class SendService implements Runnable {
@@ -46,6 +48,9 @@ public class SendService implements Runnable {
         return sendService;
     }
 
+    /**
+     * This is the thread for blocking the login if user failed to login for 3 times.
+     */
     private class Block implements Runnable{
         public void run(){
             try {
@@ -57,6 +62,9 @@ public class SendService implements Runnable {
         }
     }
 
+    /**
+     * Main thread for client, listening keyboard input.
+     */
     public void run(){
         Scanner scanner = new Scanner(System.in);
         while(true) {
@@ -104,12 +112,15 @@ public class SendService implements Runnable {
                 String line = scanner.nextLine();
                 inputLine = null;
                 if(!isLogin) break;
+                //If the input is blocked by other thread, then
+                //the main thread will transfer the input to the target thread.
                 if(blockMainInput){
                     inputLine = line;
                     blockMainInput = false;
                     continue;
                 }
                 try {
+                    //for every keyboard command, start a new thread to handle it.
                     Thread thread = new Thread(new SendHandle(line));
                     thread.start();
                 } catch (Exception e) {

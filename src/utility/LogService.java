@@ -1,6 +1,7 @@
 package utility;
 import java.io.*;
 /**
+ * This class is a simple tool for recording logs.
  * Created by szeyiu on 3/4/15.
  */
 public class LogService {
@@ -8,6 +9,7 @@ public class LogService {
     private BufferedWriter writer = null;
     private LogService() throws Exception{
         System.out.println("Starting log service...");
+        //the log file name is chatroom.log
         File f = new File("chatroom.log");
         writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
     }

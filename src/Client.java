@@ -9,18 +9,28 @@ import utility.SocketService;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The entry class for client
+ */
 public class Client {
     public static void main(String[] args) throws Exception {
+        //the first arg is the server ip
         String serverIP = args[0];
+        //second arg is server port
         int serverPort = Integer.valueOf(args[1]);
         if(args.length>2){
+            //the third optional arg is client port
+            //if not available, then client port is same with server port.
             SendService.listenPort = Integer.valueOf(args[2]);
         }
         SendService.setAddr(serverIP, serverPort);
+        //start listening received message
         ReceiveService receiveService = ReceiveService.getInstance();
+        //start listening keyboard input
         SendService sendService  = SendService.getInstance();
         receiveService.start();
         sendService.start();
+        // handle control c interrupt
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
             public void run(){

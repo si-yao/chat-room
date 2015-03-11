@@ -9,11 +9,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The entry class for server
+ */
 public class Server {
     public static void main(String argv[]) throws Exception {
+        // the first arg is the server port
         HubService.serverPort = Integer.valueOf(argv[0]);
+        // start the service of Server
         HubService hubService = HubService.getInstance();
         hubService.start();
+        // handle the control c interrupt
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
             public void run(){

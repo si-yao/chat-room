@@ -6,9 +6,9 @@ import utility.SocketService;
 import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 /**
+ * This is the thread to handle keyboard commands.
  * Created by szeyiu on 3/4/15.
  */
 public class SendHandle implements Runnable{
@@ -17,6 +17,10 @@ public class SendHandle implements Runnable{
     public SendHandle(String cmd){
         this.cmd = cmd;
     }
+
+    /**
+     * invoke the proper function for the proper commands.
+     */
     public void run(){
         try {
             socketService = SocketService.getInstance(SendService.listenPort);
@@ -51,6 +55,9 @@ public class SendHandle implements Runnable{
                 p2p();
             }
             else {
+                /*
+                This part is for simple command, client will send the message to the last connacted user.
+                 */
                 SendService.blockMainInput = true;
                 System.out.print("Send msg to " + SendService.lastuser + "? (Y/N) Y");
                 while(SendService.inputLine == null){
@@ -69,6 +76,10 @@ public class SendHandle implements Runnable{
         }
     }
 
+    /**
+     * P2P message to the target user.
+     * @throws Exception
+     */
     private void p2p() throws Exception {
         Map<String, String> dic = new HashMap<String, String>();
         int spaceIdx = cmd.indexOf(" ");
@@ -121,6 +132,10 @@ public class SendHandle implements Runnable{
         try {
             res = socketService.request(IP, port, KVSerialize.encode(dic));
         } catch (ConnectException e){
+            /*
+            If the user is offline now, then send the message to server.
+            server will save it to offline message queue.
+             */
             res = socketService.request(SendService.serverAddr, SendService.serverPort, KVSerialize.encode(dic));
         }
         dic = KVSerialize.decode(res);
@@ -133,6 +148,11 @@ public class SendHandle implements Runnable{
         }
     }
 
+    /**
+     * get the address of target user.
+     * If the user rejects, then print the fail reason.
+     * @throws Exception
+     */
     private void address() throws Exception {
         Map<String, String> dic = new HashMap<String, String>();
         dic.put("type","address");
@@ -157,6 +177,11 @@ public class SendHandle implements Runnable{
             System.out.println(dic.get("result"));
         }
     }
+
+    /**
+     * Send logout message to server to unregister
+     * @throws Exception
+     */
     private void logout() throws Exception {
         Map<String, String> dic = new HashMap<String, String>();
         dic.put("type","logout");
@@ -173,6 +198,10 @@ public class SendHandle implements Runnable{
         }
     }
 
+    /**
+     * unblock request.
+     * @throws Exception
+     */
     private void unblock() throws Exception {
         Map<String, String> dic = new HashMap<String, String>();
         dic.put("type","unblock");
@@ -191,6 +220,10 @@ public class SendHandle implements Runnable{
         }
     }
 
+    /**
+     * block request
+     * @throws Exception
+     */
     private void block() throws Exception {
         Map<String, String> dic = new HashMap<String, String>();
         dic.put("type","block");
@@ -209,6 +242,10 @@ public class SendHandle implements Runnable{
         }
     }
 
+    /**
+     * broadcast to all users
+     * @throws Exception
+     */
     private void broadcast() throws Exception{
         Map<String, String> dic = new HashMap<String, String>();
         dic.put("type","broadcast");
@@ -227,6 +264,10 @@ public class SendHandle implements Runnable{
         }
     }
 
+    /**
+     * get the online list
+     * @throws Exception
+     */
     private void online() throws Exception{
         Map<String, String> dic = new HashMap<String, String>();
         dic.put("type","online");
@@ -237,6 +278,10 @@ public class SendHandle implements Runnable{
         }
     }
 
+    /**
+     * send message via server
+     * @throws Exception
+     */
     private void message() throws Exception{
         Map<String, String> dic = new HashMap<String, String>();
         int spaceIdx = cmd.indexOf(" ");
