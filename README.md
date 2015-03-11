@@ -80,3 +80,9 @@ Client p2p API:
     Request: {"type": "kill", "reason": "you have logged in at another place."}
 
     Response: {"result":"ok"} if success, {"result": "some fail reason"} if fail.
+
+5. Need IP
+
+    Request: {"type": "ip", "from":"user"}
+
+    Response: {"result":"ok"} if success, {"result": "rej"} if fail.

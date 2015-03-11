@@ -54,7 +54,8 @@ public class HubHandle implements Runnable{
             }
             else if(type.equals("address")){
                 address(dic);
-            } else if(type.equals("alive")){
+            }
+            else if(type.equals("alive")){
                 alive(dic);
             }
             else {
@@ -95,8 +96,27 @@ public class HubHandle implements Runnable{
             return;
         }
         resDic.put("result","ok");
-        String ip = HubService.ipMap.get(target);
-        String port = ""+ HubService.portMap.get(target);
+        String ip = HubService.ipMap.containsKey(target)? HubService.ipMap.get(target):"";
+        int port = HubService.portMap.containsKey(target)? HubService.portMap.get(target):-1;
+
+
+        Map<String, String> askMap = new HashMap<String, String>();
+        askMap.put("type","ip");
+        askMap.put("from",from);
+        String askRes="";
+        try {
+            askRes = socketService.request(ip, port, KVSerialize.encode(askMap));
+            if(!KVSerialize.decode(askRes).containsKey("result") || !KVSerialize.decode(askRes).get("result").equals("ok")){
+                resDic.put("result","the user denied your request.");
+            }
+        } catch (Exception e){
+            resDic.put("result","the user is offline");
+        }
+        if(!resDic.get("result").equals("ok")){
+            socketService.response(src, KVSerialize.encode(resDic));
+            return;
+        }
+
         if(!HubService.p2pPairs.containsKey(from))
             HubService.p2pPairs.put(from, new HashSet<String>());
         if(!HubService.p2pPairs.containsKey(target))
@@ -104,7 +124,9 @@ public class HubHandle implements Runnable{
         HubService.p2pPairs.get(from).add(target);
         HubService.p2pPairs.get(target).add(from);
         resDic.put("ip",ip);
-        resDic.put("port",port);
+        resDic.put("port",""+port);
+
+        System.out.println(askRes);
         socketService.response(src, KVSerialize.encode(resDic));
     }
 

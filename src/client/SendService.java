@@ -91,6 +91,7 @@ public class SendService implements Runnable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                if(!success) System.out.println("Login failed. Try again.");
                 wrongtime++;
             }
             isLogin = true;

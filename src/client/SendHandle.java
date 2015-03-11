@@ -60,6 +60,7 @@ public class SendHandle implements Runnable{
                     System.out.println("cancel.");
                     return;
                 }
+                SendService.inputLine = null;
                 cmd = "message " + SendService.lastuser + " " + cmd;
                 message();
             }
@@ -84,13 +85,14 @@ public class SendHandle implements Runnable{
             addrDic.put("type", "address");
             addrDic.put("from", SendService.username);
             addrDic.put("target", toUser);
+            System.out.println("First p2p connection. Waiting approve from "+toUser);
             String res = socketService.request(SendService.serverAddr,SendService.serverPort,KVSerialize.encode(addrDic));
             addrDic = KVSerialize.decode(res);
             if(!addrDic.containsKey("result")) {
                 System.out.println("Server Error. Try again.");
                 return;
             } else if(!addrDic.get("result").equals("ok")){
-                //System.out.println(addrDic.get("result"));
+                System.out.println(addrDic.get("result"));
                 dic.put("from", SendService.username);
                 dic.put("to", toUser);
                 dic.put("msg", message);
@@ -99,7 +101,7 @@ public class SendHandle implements Runnable{
                 if(!dic.containsKey("result")){
                     System.out.println("Server Error. Try again.");
                 } else if(dic.get("result").equals("ok")){
-                    System.out.println("(delivered to "+toUser+" p2p)");
+                    System.out.println("(delivered to "+toUser+" via server)");
                 } else {
                     System.out.println(dic.get("result"));
                 }
@@ -125,7 +127,7 @@ public class SendHandle implements Runnable{
         if(!dic.containsKey("result")){
             System.out.println("Server Error. Try again.");
         } else if(dic.get("result").equals("ok")){
-            System.out.println("(delivered)");
+            System.out.println("(delivered to "+toUser+" p2p)");
         } else {
             System.out.println(dic.get("result"));
         }
@@ -138,11 +140,13 @@ public class SendHandle implements Runnable{
         String target = cmd.substring(spaceIdx+1);
         dic.put("target",target);
         dic.put("from", SendService.username);
+        System.out.println("Waiting for approve from user: "+target);
         String res = socketService.request(SendService.serverAddr,SendService.serverPort,KVSerialize.encode(dic));
         dic = KVSerialize.decode(res);
         if(!dic.containsKey("result")){
             System.out.println("Server Error. Try again.");
         } else if(dic.get("result").equals("ok")){
+            System.out.println("USER: "+target);
             if(dic.containsKey("ip")) {
                 System.out.println("IP: "+dic.get("ip"));
             }
@@ -162,7 +166,7 @@ public class SendHandle implements Runnable{
         if(!dic.containsKey("result")){
             System.out.println("Server Error. Try again.");
         } else if(dic.get("result").equals("ok")){
-            System.out.println("success.");
+            System.out.println("Success. Enter to login again.");
             SendService.isLogin = false;
         } else {
             System.out.println(dic.get("result"));
