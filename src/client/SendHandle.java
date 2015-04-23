@@ -4,8 +4,8 @@ import utility.KVSerialize;
 import utility.SocketService;
 
 import java.net.ConnectException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * This is the thread to handle keyboard commands.
@@ -81,7 +81,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void p2p() throws Exception {
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         int spaceIdx = cmd.indexOf(" ");
         dic.put("type","message");
         int userIdx = cmd.indexOf(" ", spaceIdx+1);
@@ -92,7 +92,7 @@ public class SendHandle implements Runnable{
         String toUser = cmd.substring(spaceIdx+1, userIdx);
         String message = cmd.substring(userIdx + 1);
         if(!SendService.p2pIpMap.containsKey(toUser) || !SendService.p2pPortMap.containsKey(toUser)){
-            Map<String, String> addrDic = new HashMap<String, String>();
+            Map<String, String> addrDic = new ConcurrentHashMap<String, String>();
             addrDic.put("type", "address");
             addrDic.put("from", SendService.username);
             addrDic.put("target", toUser);
@@ -154,7 +154,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void address() throws Exception {
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         dic.put("type","address");
         int spaceIdx = cmd.indexOf(" ");
         String target = cmd.substring(spaceIdx+1);
@@ -183,7 +183,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void logout() throws Exception {
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         dic.put("type","logout");
         dic.put("from",SendService.username);
         String res = socketService.request(SendService.serverAddr,SendService.serverPort,KVSerialize.encode(dic));
@@ -203,7 +203,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void unblock() throws Exception {
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         dic.put("type","unblock");
         int spaceIdx = cmd.indexOf(" ");
         String target = cmd.substring(spaceIdx+1);
@@ -225,7 +225,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void block() throws Exception {
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         dic.put("type","block");
         int spaceIdx = cmd.indexOf(" ");
         String target = cmd.substring(spaceIdx+1);
@@ -247,7 +247,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void broadcast() throws Exception{
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         dic.put("type","broadcast");
         int spaceIdx = cmd.indexOf(" ");
         String message = cmd.substring(spaceIdx+1);
@@ -269,7 +269,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void online() throws Exception{
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         dic.put("type","online");
         String res = socketService.request(SendService.serverAddr, SendService.serverPort, KVSerialize.encode(dic));
         dic = KVSerialize.decode(res);
@@ -283,7 +283,7 @@ public class SendHandle implements Runnable{
      * @throws Exception
      */
     private void message() throws Exception{
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         int spaceIdx = cmd.indexOf(" ");
         dic.put("type","message");
         int userIdx = cmd.indexOf(" ", spaceIdx+1);

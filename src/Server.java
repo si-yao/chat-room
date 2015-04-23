@@ -5,9 +5,8 @@ import server.*;
 import utility.KVSerialize;
 import utility.SocketService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * The entry class for server
@@ -23,7 +22,7 @@ public class Server {
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
             public void run(){
-                Map<String, String> killMap = new HashMap<String, String>();
+                Map<String, String> killMap = new ConcurrentHashMap<String, String>();
                 killMap.put("type","kill");
                 killMap.put("reason","Server is down now...");
                 try {

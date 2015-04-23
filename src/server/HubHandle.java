@@ -4,7 +4,7 @@ import utility.*;
 
 import java.net.*;
 import java.util.*;
-
+import java.util.concurrent.*;
 /**
  * This is the thread to handle the incoming request.
  * Created by szeyiu on 3/4/15.
@@ -78,7 +78,7 @@ public class HubHandle implements Runnable{
     private void alive(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         HubService.aliveMap.put(from, true);
-        Map<String, String> resDic = new HashMap<String, String>();
+        Map<String, String> resDic = new ConcurrentHashMap<String, String>();
         resDic.put("result","ok");
         socketService.response(src,KVSerialize.encode(resDic));
     }
@@ -93,7 +93,7 @@ public class HubHandle implements Runnable{
     private void address(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String target = dic.containsKey("target")? dic.get("target"):"";
-        Map<String, String> resDic = new HashMap<String, String>();
+        Map<String, String> resDic = new ConcurrentHashMap<String, String>();
         resDic.put("ip","null");
         resDic.put("port","null");
         if(!HubService.passwdMap.containsKey(target)){
@@ -116,7 +116,7 @@ public class HubHandle implements Runnable{
         int port = HubService.portMap.containsKey(target)? HubService.portMap.get(target):-1;
 
 
-        Map<String, String> askMap = new HashMap<String, String>();
+        Map<String, String> askMap = new ConcurrentHashMap<String, String>();
         askMap.put("type","ip");
         askMap.put("from",from);
         String askRes="";
@@ -172,7 +172,7 @@ public class HubHandle implements Runnable{
             }
             HubService.p2pPairs.remove(from);
         }
-        Map<String, String> resDic = new HashMap<String, String>();
+        Map<String, String> resDic = new ConcurrentHashMap<String, String>();
         resDic.put("result","ok");
         socketService.response(src, KVSerialize.encode(resDic));
     }
@@ -191,7 +191,7 @@ public class HubHandle implements Runnable{
         public void run(){
             if(!isOnline(u)) return;
             try {
-                Map<String, String> offDic = new HashMap<String, String>();
+                Map<String, String> offDic = new ConcurrentHashMap<String, String>();
                 offDic.put("type", "offline");
                 offDic.put("from", from);
                 String ip = HubService.ipMap.get(u);
@@ -211,7 +211,7 @@ public class HubHandle implements Runnable{
     private void unblock(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String target = dic.containsKey("target")? dic.get("target"):"";
-        Map<String, String> resDic = new HashMap<String, String>();
+        Map<String, String> resDic = new ConcurrentHashMap<String, String>();
         if(!HubService.passwdMap.containsKey(target)){
             resDic.put("result","user does not exist");
             socketService.response(src, KVSerialize.encode(resDic));
@@ -242,7 +242,7 @@ public class HubHandle implements Runnable{
     private void block(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String target = dic.containsKey("target")? dic.get("target"):"";
-        Map<String, String> resDic = new HashMap<String, String>();
+        Map<String, String> resDic = new ConcurrentHashMap<String, String>();
         if(!HubService.passwdMap.containsKey(target)){
             resDic.put("result","user does not exist");
             socketService.response(src, KVSerialize.encode(resDic));
@@ -269,7 +269,7 @@ public class HubHandle implements Runnable{
     private void broadcast(Map<String, String> dic) throws Exception {
         String from = dic.containsKey("from")? dic.get("from"):"";
         String message = dic.containsKey("msg")? dic.get("msg"):"";
-        Map<String, String> reqDic = new HashMap<String, String>();
+        Map<String, String> reqDic = new ConcurrentHashMap<String, String>();
         reqDic.put("type","message");
         reqDic.put("from",from);
         reqDic.put("msg",message);
@@ -282,7 +282,7 @@ public class HubHandle implements Runnable{
                 sendThread.start();
             }
         }
-        Map<String, String> resDic = new HashMap<String, String>();
+        Map<String, String> resDic = new ConcurrentHashMap<String, String>();
         resDic.put("result", "ok");
         socketService.response(src, KVSerialize.encode(resDic));
     }
@@ -341,7 +341,7 @@ public class HubHandle implements Runnable{
      * @throws Exception
      */
     private void online() throws Exception {
-        Map<String, String> kvmap = new HashMap<String, String>();
+        Map<String, String> kvmap = new ConcurrentHashMap<String, String>();
         for(String u: new ArrayList<String>(HubService.ipMap.keySet())){
             kvmap.put(u,u);
         }
@@ -355,7 +355,7 @@ public class HubHandle implements Runnable{
      * @throws Exception
      */
     private void auth(Map<String, String> dic) throws Exception {
-        Map<String, String> kvmap = new HashMap<String, String>();
+        Map<String, String> kvmap = new ConcurrentHashMap<String, String>();
         String u = dic.containsKey("username")? dic.get("username"): "";
         String p = dic.containsKey("password")? dic.get("password"): "";
         int port = dic.containsKey("port")? Integer.valueOf(dic.get("port")):0;
@@ -364,7 +364,7 @@ public class HubHandle implements Runnable{
             if(isOnline(u)){
                 String oldIP = HubService.ipMap.get(u);
                 int oldPort = HubService.portMap.get(u);
-                Map<String, String> killMap = new HashMap<String, String>();
+                Map<String, String> killMap = new ConcurrentHashMap<String, String>();
                 killMap.put("type","kill");
                 killMap.put("reason","you have logged in at another place.");
                 try {
@@ -397,7 +397,7 @@ public class HubHandle implements Runnable{
      * @throws Exception
      */
     private void error() throws Exception{
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new ConcurrentHashMap<String, String>();
         map.put("result", "unknown error");
         socketService.response(src, KVSerialize.encode(map));
     }
@@ -414,7 +414,7 @@ public class HubHandle implements Runnable{
         String message = dic.containsKey("msg")? dic.get("msg"): "";
         String toIP;
         int toPort;
-        Map<String, String> kvmap = new HashMap<String, String>();
+        Map<String, String> kvmap = new ConcurrentHashMap<String, String>();
         if(!HubService.passwdMap.containsKey(to)){
             kvmap.put("result", "user does not exist!");
             socketService.response(src,KVSerialize.encode(kvmap));
@@ -442,7 +442,7 @@ public class HubHandle implements Runnable{
             try {
                 socketService.request(toIP, toPort, KVSerialize.encode(kvmap));
             } catch(ConnectException e){
-                kvmap = new HashMap<String, String>();
+                kvmap = new ConcurrentHashMap<String, String>();
                 kvmap.put("result", to + " is offline now. Msg will be delivered when online.");
                 Map<String, List<String>> offMap = HubService.offlineReq;
                 if(!offMap.containsKey(to)){
@@ -452,7 +452,7 @@ public class HubHandle implements Runnable{
                 socketService.response(src, KVSerialize.encode(kvmap));
                 return;
             }
-            kvmap = new HashMap<String, String>();
+            kvmap = new ConcurrentHashMap<String, String>();
             kvmap.put("result","ok");
         } else {
             Map<String, List<String>> offMap = HubService.offlineReq;
@@ -460,7 +460,7 @@ public class HubHandle implements Runnable{
                 offMap.put(to, new ArrayList<String>());
             }
             offMap.get(to).add(reqStr);
-            kvmap = new HashMap<String, String>();
+            kvmap = new ConcurrentHashMap<String, String>();
             kvmap.put("result",to + " is offline now. Msg will be delivered when online.");
         }
         socketService.response(src, KVSerialize.encode(kvmap));

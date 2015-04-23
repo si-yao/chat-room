@@ -6,8 +6,8 @@ import client.SendService;
 import utility.KVSerialize;
 import utility.SocketService;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * The entry class for client
@@ -36,7 +36,7 @@ public class Client {
             public void run(){
                 try {
                     System.out.println("System: exiting...");
-                    Map<String, String> dic = new HashMap<String, String>();
+                    Map<String, String> dic = new ConcurrentHashMap<String, String>();
                     dic.put("type", "logout");
                     dic.put("from", SendService.username);
                     SocketService socketService = SocketService.getInstance(SendService.listenPort);

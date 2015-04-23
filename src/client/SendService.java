@@ -2,6 +2,7 @@ package client;
 import utility.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is the class listening all keyboard input.
@@ -31,8 +32,8 @@ public class SendService implements Runnable {
         logService = LogService.getInstance();
         socketService = SocketService.getInstance(listenPort);
         logService.log(threadname + "Init Singlton");
-        p2pIpMap = new HashMap<String, String>();
-        p2pPortMap = new HashMap<String, Integer>();
+        p2pIpMap = new ConcurrentHashMap<String, String>();
+        p2pPortMap = new ConcurrentHashMap<String, Integer>();
         t = null;
     }
 
@@ -88,7 +89,7 @@ public class SendService implements Runnable {
                     System.out.println("Due to multiple login failures, your account has been blocked. Please try again after sometime.");
                     continue;
                 }
-                Map<String, String> param = new HashMap<String, String>();
+                Map<String, String> param = new ConcurrentHashMap<String, String>();
                 param.put("type", "auth");
                 param.put("username", user);
                 param.put("password", password);

@@ -1,5 +1,6 @@
 package utility;
 import java.util.*;
+import java.util.concurrent.*;
 /**
  * This is the protocol for socket.
  * It convert a Map to a serialized string for messaging via socket.
@@ -38,7 +39,7 @@ public class KVSerialize {
      * @return
      */
     public static Map<String, String> decode(String s){
-        Map<String, String> rstMap = new HashMap<String, String>();
+        Map<String, String> rstMap = new ConcurrentHashMap<String, String>();
         boolean isKey = true;
         StringBuilder buffer = new StringBuilder();
         String curKey = "";

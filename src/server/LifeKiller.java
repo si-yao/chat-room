@@ -5,6 +5,7 @@ import utility.LogService;
 import utility.SocketService;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.net.*;
 
 /**
@@ -58,7 +59,7 @@ public class LifeKiller implements Runnable{
             this.from = from;
         }
         public void run(){
-            Map<String, String> logoutDic = new HashMap<String, String>();
+            Map<String, String> logoutDic = new ConcurrentHashMap<String, String>();
             logoutDic.put("type","logout");
             logoutDic.put("from",from);
             String res = "";

@@ -2,6 +2,7 @@ package server;
 
 import utility.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.io.*;
 import java.net.*;
 /**
@@ -27,13 +28,13 @@ public class HubService implements Runnable{
 
     private HubService() throws Exception{
         System.out.println(threadname+" singleton init..");
-        passwdMap = new HashMap<String, String>();
-        ipMap = new HashMap<String, String>();
-        portMap = new HashMap<String, Integer>();
-        blockMap = new HashMap<String, List<String>>();
-        offlineReq = new HashMap<String, List<String>>();
-        aliveMap = new HashMap<String, Boolean>();
-        p2pPairs = new HashMap<String, Set<String>>();
+        passwdMap = new ConcurrentHashMap<String, String>();
+        ipMap = new ConcurrentHashMap<String, String>();
+        portMap = new ConcurrentHashMap<String, Integer>();
+        blockMap = new ConcurrentHashMap<String, List<String>>();
+        offlineReq = new ConcurrentHashMap<String, List<String>>();
+        aliveMap = new ConcurrentHashMap<String, Boolean>();
+        p2pPairs = new ConcurrentHashMap<String, Set<String>>();
         File f = new File(passwdFile);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
         String line = reader.readLine();

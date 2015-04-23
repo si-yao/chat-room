@@ -3,6 +3,7 @@ import utility.KVSerialize;
 import utility.SocketService;
 
 import java.util.*;
+import java.util.concurrent.*;
 /**
  * This is the thread for heartbeats.
  * Send heartbeats for every 30s.
@@ -17,7 +18,7 @@ public class LifeKeeper implements Runnable{
         } catch (Exception e){
             e.printStackTrace();
         }
-        Map<String, String> dic = new HashMap<String, String>();
+        Map<String, String> dic = new ConcurrentHashMap<String, String>();
         dic.put("type", "alive");
         dic.put("from", SendService.username);
         String req = KVSerialize.encode(dic);
